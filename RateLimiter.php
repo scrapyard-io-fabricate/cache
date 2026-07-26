@@ -67,7 +67,7 @@ class RateLimiter
         $limiter = $this->limiters[$resolvedName] ?? null;
 
         if (! is_callable($limiter)) {
-            return;
+            return null;
         }
 
         return function (...$args) use ($limiter) {

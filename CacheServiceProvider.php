@@ -18,6 +18,10 @@ class CacheServiceProvider extends ServiceProvider implements DeferrableProvider
             return new CacheManager($app);
         });
 
+        $this->program->singleton(CacheManager::class, function ($app) {
+            return $app->make('cache');
+        });
+
         $this->program->singleton('cache.store', function ($app) {
             return $app['cache']->driver();
         });
@@ -37,7 +41,7 @@ class CacheServiceProvider extends ServiceProvider implements DeferrableProvider
     public function provides(): array
     {
         return [
-            'cache', 'cache.store', RateLimiter::class,
+            'cache', 'cache.store', CacheManager::class, RateLimiter::class,
         ];
     }
 }

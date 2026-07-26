@@ -643,13 +643,13 @@ class CacheRepository implements ArrayAccess, CacheContract
 
         [
             $key => $value,
-            CACHE_KEY_PREFIX::FLEXIBLE_CREATED->value.$key => $created,
-        ] = $this->many([$key, CACHE_KEY_PREFIX::FLEXIBLE_CREATED->value.$key]);
+            CacheKeyPrefix::FLEXIBLE_CREATED->value.$key => $created,
+        ] = $this->many([$key, CacheKeyPrefix::FLEXIBLE_CREATED->value.$key]);
 
         if (in_array(null, [$value, $created], true)) {
             return tap(value($callback), fn ($value) => $this->putMany([
                 $key => $value,
-                CACHE_KEY_PREFIX::FLEXIBLE_CREATED->value.$key => Carbon::now()->getTimestamp(),
+                CacheKeyPrefix::FLEXIBLE_CREATED->value.$key => Carbon::now()->getTimestamp(),
             ], $ttl[1]));
         }
 
@@ -663,13 +663,13 @@ class CacheRepository implements ArrayAccess, CacheContract
                 $lock['seconds'] ?? 0,
                 $lock['owner'] ?? null,
             )->get(function () use ($key, $callback, $created, $ttl) {
-                if ($created !== $this->get(CACHE_KEY_PREFIX::FLEXIBLE_CREATED->value.$key)) {
-                    return;
+                if ($created !== $this->get(CacheKeyPrefix::FLEXIBLE_CREATED->value.$key)) {
+                    return null;
                 }
 
                 $this->putMany([
                     $key => value($callback),
-                    CACHE_KEY_PREFIX::FLEXIBLE_CREATED->value.$key => Carbon::now()->getTimestamp(),
+                    CacheKeyPrefix::FLEXIBLE_CREATED->value.$key => Carbon::now()->getTimestamp(),
                 ], $ttl[1]);
             });
         };
